@@ -1,3 +1,21 @@
+const embedded = window.parent !== window;
+const pendingHostRequests = new Map();
+let hostSequence = 0;
+window.addEventListener('message', (event) => {
+  if (event.source !== window.parent || event.origin !== location.origin) return;
+  const d = event.data;
+  if (d?.type !== 'cpamp:plugin-api:response' || d.version !== 1) return;
+  const pending = pendingHostRequests.get(d.id);
+  if (pending) { clearTimeout(pending.timer); pendingHostRequests.delete(d.id); pending.resolve(d); }
+});
+function panelRequest(path, method, body) {
+  return new Promise((resolve, reject) => {
+    const id = 'quality-' + (++hostSequence);
+    const timer = setTimeout(() => { pendingHostRequests.delete(id); reject(new Error('面板连接已失效，请刷新面板后重试。')); }, 35000);
+    pendingHostRequests.set(id, { resolve, timer });
+    window.parent.postMessage({ type: 'cpamp:plugin-api:request', version: 1, id, path: API + path, method, body }, location.origin);
+  });
+}
 const API = '/v0/management/plugins/model-quality/';
 const $ = (id) => document.getElementById(id);
 const state = { data: null, key: '', selectedAccounts: new Set(), selectedModels: new Set(), selectedCases: new Set(['probability', 'code', 'instruction']), batch: null, baseline: null, baselineID: '', artifacts: new Map(), cards: new Map(), history: [], historyLimit: 20, tab: 'setup', pollBusy: false, busy: false };
@@ -26,12 +44,21 @@ async function api(path, options = {}) {
   const headers = { ...options.headers };
   if (state.key) headers.Authorization = 'Bearer ' + state.key;
   if (options.body != null) { headers['Content-Type'] = 'application/json'; options.body = JSON.stringify(options.body); }
-  const r = await fetch(API + path, { ...options, headers, credentials: 'same-origin', cache: 'no-store' });
-  if (r.status === 401 || r.status === 403) { $('login').hidden = false; throw new Error('管理接口需要认证，请输入当前服务的管理密钥。'); }
-  const type = r.headers.get('content-type') || '';
-  if (!type.includes('application/json')) throw new Error(`管理接口返回 HTTP ${r.status}，请检查插件状态与反向代理。`);
-  const body = await r.json();
-  if (!r.ok) throw new Error(body.error || `HTTP ${r.status}`);
+  let status, body;
+  if (embedded) {
+    const response = await panelRequest(path, options.method || 'GET', options.body);
+    status = response.status; body = response.body;
+  } else {
+    const r = await fetch(API + path, { ...options, headers, credentials: 'same-origin', cache: 'no-store' });
+    status = r.status;
+    if (!(r.headers.get('content-type') || '').includes('application/json')) throw new Error(`管理接口返回 HTTP ${status}，请检查插件状态。`);
+    body = await r.json();
+  }
+  if (status === 401 || status === 403) {
+    $('login').hidden = embedded;
+    throw new Error(embedded ? '面板登录已失效，请重新登录面板。' : '请输入当前服务的管理密钥。');
+  }
+  if (status < 200 || status >= 300) throw new Error(body.error || `HTTP ${status}`);
   $('login').hidden = true;
   return body;
 }

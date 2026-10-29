@@ -68,7 +68,7 @@ plugins:
 /v0/resource/plugins/model-quality/page
 ```
 
-反向代理需转发 `/v0/resource/plugins/*` 和 `/v0/management/plugins/*`。页面静态资源可公开访问；账号、历史、原始回复和所有操作接口均由 CPA/Manager 的管理认证保护。首次打开插件页面时，输入当前服务的管理密钥（Manager 入口使用面板管理员密钥）；密钥只保留在本页内存，刷新页面后需重新输入。
+反向代理需转发 `/v0/resource/plugins/*` 和 `/v0/management/plugins/*`。页面静态资源可公开访问；账号、历史、原始回复和所有操作接口均由 CPA/Manager 的管理认证保护。从已登录的 CPA Manager Plus 打开时，自动复用面板认证，不再要求输入插件密码。需要带插件认证桥接的 Manager 前端；直接访问内核独立页面时仍可输入管理密钥。
 
 ## 构建与验证
 

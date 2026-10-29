@@ -4,7 +4,7 @@
 
 The library uses CPA's stable JSON-over-C ABI, with ABI version 1 and schema version 6. Its only declared capability is `management_api`; no request interception, routing, credential mutation, or automatic generation capability is registered.
 
-Public resources contain static UI assets only. Account discovery, batch creation, progress, artifacts, exports, history deletion, baseline changes, and cleanup are authenticated management routes. The current CPA Manager Plus authorizes plugin APIs through a Bearer header and does not inject a session into resource iframes. The UI therefore asks once per page load for the current service admin key and keeps it only in memory. The key is never placed in URLs, browser storage, history, exports, or model requests.
+Public resources contain static UI assets only. Account discovery, batch creation, progress, artifacts, exports, history deletion, baseline changes, and cleanup are authenticated management routes. The Manager frontend relays same-origin model-quality iframe requests through its existing authenticated connection. Messages must originate from the exact active iframe and match its origin. The relay is restricted to this plugin API prefix and aborts on unmount; credentials stay in the parent and are not sent to the iframe. The plugin therefore has no extra login step inside Manager. Standalone access retains an in-memory management-key fallback.
 
 The internal host model callback is passed an exact auth ID, provider and model. Disabled credentials are rejected, and retries look up the same credential again. Expected answers and explanations never enter the generated request body. Host callback context IDs belonging to the short management request are deliberately not attached to asynchronous jobs.
 

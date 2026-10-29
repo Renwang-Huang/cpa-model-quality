@@ -14,7 +14,7 @@ import (
 )
 
 const pluginID = "model-quality"
-const pluginVersion = "0.1.1"
+const pluginVersion = "0.1.2"
 const apiPrefix = "/v0/management/plugins/" + pluginID
 const resourcePrefix = "/v0/resource/plugins/" + pluginID
 
