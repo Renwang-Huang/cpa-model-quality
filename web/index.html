@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>模型测智 · CPA</title><link rel="icon" href="./logo.svg"><link rel="stylesheet" href="./style.css"></head>
+<body>
+<main class="app">
+  <header class="header"><div class="brand"><img src="./logo.svg" alt="" width="42" height="42"><div><h1>模型测智 <span class="version">CPA</span></h1><p>同题、同参数，比较不同账号与模型的实际表现。</p></div></div><button id="refresh" class="quiet">刷新账号</button></header>
+  <div id="notice" role="status" hidden></div>
+  <section id="login" class="panel" hidden><h2>连接管理接口</h2><p class="muted">请输入当前服务的管理密钥：通过 CPA Manager Plus 访问时使用面板管理员密钥，直接访问内核时使用 CPA 管理密钥。密钥仅保存在本页内存。</p><form id="login-form"><label>管理密钥<input id="key" type="password" autocomplete="off" required></label><button class="primary" type="submit">连接</button></form></section>
+  <nav class="tabs" aria-label="测智工作区"><button data-tab="setup" class="selected">新建测试</button><button data-tab="results">测试结果 <span id="run-dot" hidden>●</span></button><button data-tab="history">历史记录</button></nav>
+  <section id="setup" class="workspace">
+    <div class="setup-grid">
+      <div class="stack">
+        <section class="panel"><div class="section-head"><h2><span class="step">01</span> 选择测试题</h2><button id="select-cases" class="quiet small">全选客观题</button></div><p class="muted">客观题按固定参考答案判分。绘图、自由推理和自定义回复可并排比较。</p><div id="cases" class="case-list"></div>
+          <details id="custom-box"><summary>＋ 自定义提示词</summary><label for="custom-prompt">自定义测试内容</label><textarea id="custom-prompt" rows="6" maxlength="32768" placeholder="填写要让所有账号完成的同一道题……"></textarea><label class="inline"><input id="use-custom" type="checkbox"> 加入本批测试（人工比较）</label></details>
+        </section>
+        <section class="panel"><div class="section-head"><h2>题目与参考</h2><select id="inspect-case" aria-label="查看题目"></select></div><pre id="prompt-preview" class="prompt"></pre><details><summary>参考答案与评分说明</summary><div id="reference" class="reference"></div><pre id="expected" class="prompt"></pre><p id="source" class="muted"></p></details><button id="edit-custom" class="quiet small">编辑为自定义题</button></section>
+      </div>
+      <div class="stack">
+        <section class="panel"><h2><span class="step">02</span> 模型与参数</h2><label>模型（可多选）<input id="model-search" type="search" placeholder="搜索已注册模型"></label><div id="models" class="model-list"></div><div class="fields"><label>推理档位<select id="effort"><option value="auto">跟随模型默认</option value="none">none</option><option value="minimal">minimal</option><option value="low">low</option><option value="medium">medium</option><option value="high">high</option><option value="xhigh">xhigh</option><option value="max">max</option><option value="ultra">ultra</option></select></label><label>并发数<input id="concurrency" type="number" min="1" max="10" step="1" value="2"></label><label>每题重复<input id="repeats" type="number" min="1" max="5" step="1" value="1"></label></div><p class="muted">仅调用账号已注册的模型；不支持的推理档位会保留实际错误。测试会消耗所选账号的模型额度。</p></section>
+        <section class="panel"><div class="section-head"><h2><span class="step">03</span> 选择账号 <span id="account-count" class="muted"></span></h2><button id="select-accounts" class="quiet small">全选可用账号</button></div><div class="account-filters"><input id="account-search" type="search" aria-label="搜索账号" placeholder="搜索邮箱、备注或提供商"><select id="provider-filter" aria-label="提供商"><option value="">全部提供商</option></select></div><div id="accounts" class="account-list"></div></section>
+        <section class="launch panel"><div><strong id="request-count">选择账号和模型</strong><p id="request-detail" class="muted">单批最多 200 次请求</p></div><button id="start" class="primary" disabled>开始测试</button></section>
+      </div>
+    </div>
+    <p class="footnote">测智结果用于同条件复测与比较。小题集、单次绘图和模型自报名称，均不能单独证明模型身份或“降智”。</p>
+  </section>
+  <section id="results" class="workspace" hidden>
+    <div id="empty-results" class="empty panel"><h2>还没有测试结果</h2><p>选择账号与题目，开始一次可重复的比较。</p><button id="go-setup" class="primary">新建测试</button></div>
+    <div id="batch-content" hidden>
+      <section class="panel"><div class="section-head"><div><h2 id="batch-title"></h2><p id="batch-meta" class="muted"></p></div><div class="actions"><button id="cancel" class="danger" hidden>取消本批</button><button id="retry-failed" hidden>重试未完成项</button><button id="export">导出 JSON</button><button id="baseline">设为比较基线</button></div></div><progress id="progress" max="1" value="0"></progress><div id="batch-summary" class="summary-grid"></div><p id="batch-error" class="error" hidden></p><p id="baseline-help" class="muted"></p></section>
+      <section class="result-toolbar"><div class="inline"><label>测试题<select id="result-case"><option value="">全部题目</option></select></label><label>状态<select id="result-status"><option value="">全部状态</option><option value="completed">已完成</option><option value="failed">失败</option><option value="running">运行中</option><option value="cancelled">已取消</option><option value="interrupted">已中断</option></select></label></div><div class="inline"><label class="inline"><input id="only-differences" type="checkbox"> 仅看非满分 / 未评分</label><button id="compare-layout" class="quiet">切换宽卡片</button></div></section>
+      <div id="result-cards" class="result-grid"></div>
+    </div>
+  </section>
+  <section id="history" class="workspace" hidden><section class="panel"><div class="section-head"><div><h2>测试历史</h2><p id="retention" class="muted"></p></div><div class="actions"><button id="clear-baseline" class="quiet">取消基线</button><button id="cleanup">清理过期记录</button></div></div><div id="history-list"></div><button id="more-history" class="quiet" hidden>加载更多</button></section></section>
+  <footer><span>MODEL QUALITY LAB</span><span id="build-version"></span><a href="https://github.com/jlcodes99/cockpit-tools" target="_blank" rel="noreferrer">交互参考 Cockpit Tools ↗</a></footer>
+</main>
+<dialog id="artifact-dialog"><div class="section-head"><h2 id="artifact-title">测试详情</h2><button id="close-artifact" aria-label="关闭详情">关闭</button></div><div id="artifact-body"></div></dialog>
+<script type="module" src="./app.js"></script>
+</body></html>

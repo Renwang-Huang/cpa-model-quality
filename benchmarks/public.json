@@ -1,0 +1,51 @@
+[
+  {
+    "id": "simplebench-1",
+    "title": "SimpleBench · 冰块与常识",
+    "category": "公开精选题",
+    "kind": "choice",
+    "prompt": "Beth places four whole ice cubes in a frying pan at the start of the first minute, then five at the start of the second minute and some more at the start of the third minute, but none in the fourth minute. If the average number of ice cubes per minute placed in the pan while it was frying a crispy egg was five, how many whole ice cubes can be found in the pan at the end of the third minute?\nA. 30\nB. 0\nC. 20\nD. 10\nE. 11\nF. 5\n\nReason carefully. Finish with exactly one line in the form FINAL: X, replacing X with your chosen option letter. Do not provide multiple final answers.",
+    "expected": {
+      "answer": "B"
+    },
+    "reference": "原始数据集参考选项为 B。本地采用唯一末行 FINAL: X 解析，格式与正确性分别报告；此精选题结果不是官方榜单分数。",
+    "source": "SimpleBench public-2024-12-20 · MIT",
+    "source_url": "https://github.com/simple-bench/SimpleBench/blob/fbc2e429085bdedad7d1a236d2bc9bc18c95f16e/simple_bench_public.json"
+  },
+  {
+    "id": "simplebench-4",
+    "title": "SimpleBench · 两位说谎者",
+    "category": "公开精选题",
+    "kind": "choice",
+    "prompt": "There are two sisters, Amy who always speaks mistruths and Sam who always lies. You don't know which is which. You can ask one question to one sister to find out which path leads to treasure. Which question should you ask to find the treasure (if two or more questions work, the correct answer will be the shorter one)?\nA. \"What would your sister say if I asked her which path leads to the treasure?\"\nB. \"What is your sister’s name?”\nC. \"What path leads to the treasure?\"\nD. \"What path do you think I will take, if you were to guess?\"\nE. \"What is in the treasure?\"\nF. “What is your sister’s number?”\n\nReason carefully. Finish with exactly one line in the form FINAL: X, replacing X with your chosen option letter. Do not provide multiple final answers.",
+    "expected": {
+      "answer": "C"
+    },
+    "reference": "原始数据集参考选项为 C。本地采用唯一末行 FINAL: X 解析，格式与正确性分别报告；此精选题结果不是官方榜单分数。",
+    "source": "SimpleBench public-2024-12-20 · MIT",
+    "source_url": "https://github.com/simple-bench/SimpleBench/blob/fbc2e429085bdedad7d1a236d2bc9bc18c95f16e/simple_bench_public.json"
+  },
+  {
+    "id": "simplebench-8",
+    "title": "SimpleBench · 水果与数量守恒",
+    "category": "公开精选题",
+    "kind": "choice",
+    "prompt": "On a shelf, there is only a green apple, red pear, and pink peach. Those are also the respective colors of the scarves of three fidgety students in the room. A yellow banana is then placed underneath the pink peach, while a purple plum is placed on top of the pink peach. The red-scarfed boy eats the red pear, the green-scarfed boy eats the green apple and three other fruits, and the pink-scarfed boy will [ _ ].\nA. eat just the yellow banana\nB. eat the pink, yellow and purple fruits\nC. eat just the purple plum\nD. eat the pink peach\nE. eat two fruits\nF. eat no fruits\n\nReason carefully. Finish with exactly one line in the form FINAL: X, replacing X with your chosen option letter. Do not provide multiple final answers.",
+    "expected": {
+      "answer": "F"
+    },
+    "reference": "原始数据集参考选项为 F。本地采用唯一末行 FINAL: X 解析，格式与正确性分别报告；此精选题结果不是官方榜单分数。",
+    "source": "SimpleBench public-2024-12-20 · MIT",
+    "source_url": "https://github.com/simple-bench/SimpleBench/blob/fbc2e429085bdedad7d1a236d2bc9bc18c95f16e/simple_bench_public.json"
+  },
+  {
+    "id": "ifeval-1075",
+    "title": "IFEval · JSON 格式指令",
+    "category": "公开精选题",
+    "kind": "format-json",
+    "prompt": "Can you help me make an advertisement for a new product? It's a diaper that's designed to be more comfortable for babies and I want the entire output in JSON format.",
+    "reference": "仅检查回复是否为有效 JSON（允许一层 Markdown JSON 代码块），不检查广告内容质量，也不计入客观答案平均分。此本地格式检查不等同完整 IFEval 官方评估。",
+    "source": "Google Research IFEval · Apache-2.0",
+    "source_url": "https://github.com/google-research/google-research/blob/26d8ccdab6fec61b5c83ad6327ea8bda9e580288/instruction_following_eval/data/input_data.jsonl"
+  }
+]
