@@ -1,3 +1,5 @@
+**English** | [简体中文](DESIGN.zh-CN.md)
+
 # Architecture and evidence boundaries
 
 ## Integration

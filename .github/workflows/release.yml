@@ -77,7 +77,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          english = Path('RELEASE_NOTES.md').read_text().split('\n\n', 1)[1]
+          chinese = Path('RELEASE_NOTES.zh-CN.md').read_text().split('\n\n', 1)[1]
+          Path('release/release-notes.md').write_text(
+              english.rstrip() + '\n\n<details>\n<summary>简体中文</summary>\n\n'
+              + chinese.rstrip() + '\n\n</details>\n'
+          )
+          PY
           gh release create "$GITHUB_REF_NAME" \
-            --title "CPA 模型测智 $GITHUB_REF_NAME" \
-            --notes-file RELEASE_NOTES.md \
+            --title "CPA Model Quality Lab $GITHUB_REF_NAME" \
+            --notes-file release/release-notes.md \
             release/model-quality_*.zip release/build-manifest-*.json release/checksums.txt

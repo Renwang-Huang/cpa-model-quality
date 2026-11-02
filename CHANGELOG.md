@@ -1,4 +1,15 @@
+**English** | [简体中文](CHANGELOG.zh-CN.md)
+
 # Changelog
+
+## Unreleased
+
+- Make repository documentation English by default, with complete Simplified
+  Chinese translations and language links.
+- Include both languages of the README, changelog and third-party notices in
+  future build packages.
+- Use English-first repository metadata and release notes, with Chinese notes
+  retained.
 
 ## 0.1.3
 

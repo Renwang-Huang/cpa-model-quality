@@ -10,8 +10,9 @@ out=ROOT/'dist';out.mkdir(exist_ok=True)
 manifest={'id':'model-quality','version':version,'os':'linux','arch':args.arch,'libc':'glibc','abi':1,'schema':6,'verified_host_version':'v8.0.47','go_version':'go1.26.1','sha256':hashlib.sha256(raw).hexdigest()}
 (out/f'build-manifest-{args.arch}.json').write_text(json.dumps(manifest,indent=2)+'\n')
 target=out/f'model-quality_{version}_linux_{args.arch}.zip'
-files=[(lib,'model-quality.so')]+[(ROOT/n,n) for n in ['README.md','LICENSE','THIRD_PARTY_NOTICES.md']]
+files=[(lib,'model-quality.so')]+[(ROOT/n,n) for n in ['README.md','README.zh-CN.md','LICENSE','CHANGELOG.md','CHANGELOG.zh-CN.md','THIRD_PARTY_NOTICES.md','THIRD_PARTY_NOTICES.zh-CN.md']]
 files += [(f,str(f.relative_to(ROOT))) for f in sorted((ROOT/'docs').glob('*.md'))]
+files += [(ROOT/'web/logo.svg','web/logo.svg')]
 files += [(f,str(f.relative_to(ROOT))) for f in sorted((ROOT/'benchmarks').glob('*LICENSE'))]
 files += [(f,str(f.relative_to(ROOT))) for f in sorted((ROOT/'licenses').iterdir()) if f.is_file()]
 with zipfile.ZipFile(target,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:

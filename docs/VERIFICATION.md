@@ -1,3 +1,5 @@
+**English** | [简体中文](VERIFICATION.zh-CN.md)
+
 # Verification
 
 ## Tested versions and builds
@@ -5,7 +7,7 @@
 - CLIProxyAPI v8.0.47, commit `90c447d3a8727d115aa7552ec93ce023736ed492`.
 - Cockpit Tools workflow reference: `2cfe5e51314bfc0bf70bdda1ba08aed82c7dc8bf`; application implementation was not copied.
 - Linux amd64: Go 1.26.1, Debian Bookworm/glibc, Docker base manifest pinned in `scripts/Dockerfile.builder`.
-- Linux arm64: Go 1.26.1, native GCC 11.4 and Ubuntu 22.04/glibc 2.35. The Go toolchain was extracted from an existing official Go image and linked using the native glibc GCC. The library was subsequently loaded and exercised inside the official CPA Debian Bookworm image.
+- Linux arm64: early verification used Go 1.26.1, native GCC 11.4 and Ubuntu 22.04/glibc 2.35. The Go toolchain was extracted from an existing official Go image and linked using the native glibc GCC. The library was subsequently loaded and exercised inside the official CPA Debian Bookworm image. Current release builds use Debian Bookworm, as described below.
 
 Detailed machine-readable reports and synthetic screenshots are generated under the ignored `build/` directory. They are verification artifacts, not benchmark results from real models.
 

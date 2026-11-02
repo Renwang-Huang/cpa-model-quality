@@ -1,9 +1,11 @@
-首个公开发行版，包含完整源码和 Linux amd64 / arm64 原生插件包。
+**English** | [简体中文](RELEASE_NOTES.zh-CN.md)
 
-本版修复 CPA Manager Plus 深色主题下“推理档位”等原生下拉菜单的文字和背景对比度问题，兼容管理台主题与操作系统主题不同的情况。
+The first public release includes the complete source and native Linux amd64 / arm64 plugin packages.
 
-页面已移除“题目与参考”预览卡片和底部模型身份说明，保留题目选择、自定义提示词、账号与模型选择、结果详情、自动评分、并排预览、历史和基线比较。
+This version fixes text and background contrast in native select menus, including reasoning effort, when CPA Manager Plus uses a dark theme. It also handles cases where the Manager and operating system themes differ.
 
-安装要求：支持动态插件的 CPA v8.0.47 或兼容的 ABI 1 / schema 6 宿主；Linux glibc 2.36 或更新版本。解压对应架构的 ZIP，将 `model-quality.so` 放入 CPA 的 `plugins/linux/<arch>/`，在插件配置中启用，并设置可持久化的 `data_dir`。完整配置见 README。
+The setup page's question/reference preview card and model-identity footnote have been removed. Test selection, custom prompts, account/model selection, result details, automatic grading, side-by-side previews, history and baseline comparisons remain available.
 
-发布前由两种原生架构的 GitHub Actions 分别执行构建、Go race 测试、Vet，以及真实 CPA 宿主上的模拟上游集成检查。校验值见 `checksums.txt`；构建信息见 `build-manifest-*.json`。验证使用虚拟凭据，不代表真实模型的能力评测结果。
+Installation requires a CPA v8.0.47 build with dynamic plugin support, or a compatible ABI 1 / schema 6 host, on Linux with glibc 2.36 or newer. Extract the ZIP for your architecture, place `model-quality.so` in CPA's `plugins/linux/<arch>/`, enable the plugin and configure a persistent `data_dir`. See the [README](https://github.com/Renwang-Huang/cpa-model-quality#download-and-installation) for the complete configuration.
+
+Before publication, GitHub Actions built both native architectures, ran Go race tests and vet, and exercised the actual CPA host against a mock upstream. Archive checksums are in `checksums.txt`; build information is in `build-manifest-*.json`. Validation uses synthetic credentials and does not represent an evaluation of real model capabilities.
