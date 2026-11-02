@@ -41,9 +41,11 @@
 
 > 这是便于复测的小题集。分数、绘图和模型自报名称不能单独证明“降智”或实际模型身份。精选公开题的本地检查不是对应基准的官方榜单成绩。
 
-## 安装
+## 下载与安装
 
-已针对 **CPA v8.0.47 / C ABI 1 / schema 6** 适配。构建目标为 Linux amd64 和 arm64，使用 glibc 工具链匹配当前官方镜像；不依赖宿主 Go 包的二进制一致性。Alpine/musl 宿主需要另行构建对应库。
+从 [GitHub Releases](https://github.com/Renwang-Huang/cpa-model-quality/releases/latest) 下载对应架构的 ZIP。当前版本为 **0.1.3**；每个发行版包含 Linux amd64 / arm64 插件包、构建信息和 `checksums.txt`。解压前可使用 `sha256sum -c checksums.txt --ignore-missing` 校验下载文件。
+
+已针对 **CPA v8.0.47 / C ABI 1 / schema 6** 适配。正式发行包在 Debian Bookworm 原生构建，要求 **glibc 2.36 或更新版本**；不依赖宿主 Go 包的二进制一致性。Alpine/musl 宿主需要另行构建对应库。
 
 将对应架构包中的 `model-quality.so` 放进 CPA 的 `plugins/linux/<arch>/` 目录。配置示例：
 
@@ -88,7 +90,9 @@ python3 scripts/integration.py --keep
 python3 scripts/browser_check.py
 ```
 
-产物位于 `dist/model-quality_<version>_linux_<arch>.zip`，包括库、说明和许可证，并生成 SHA-256 清单。Docker 构建不读取本机或服务器上的真实凭证。无法拉取构建镜像时，也可使用 Go 1.26.1、GCC 和 glibc 运行 `scripts/build-native.sh`；本次 ARM64 包在 Ubuntu 22.04 / glibc 2.35 原生构建，并在 CPA 官方 Debian Bookworm 镜像中完成加载与调用验证。
+产物位于 `dist/model-quality_<version>_linux_<arch>.zip`，包括库、说明和许可证，并生成 SHA-256 清单。Docker 构建不读取本机或服务器上的真实凭证。无法拉取构建镜像时，也可使用 Go 1.26.1、GCC 和 glibc 运行 `scripts/build-native.sh`；自行构建的兼容性下限取决于本机工具链。
+
+GitHub Actions 在 Linux amd64 和 arm64 原生运行器上构建，执行 race 测试、Vet 及真实 CPA 宿主的模拟上游集成检查。推送与源码版本一致的 `v*` 标签后，检查通过才会发布 ZIP、构建信息与校验清单。界面支持管理台深浅主题，包括系统主题与面板主题不同的原生下拉菜单。
 
 详细验证记录见 [验证说明](docs/VERIFICATION.md)，接口与运行边界见 [设计说明](docs/DESIGN.md)。
 

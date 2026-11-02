@@ -50,7 +50,7 @@ The stream-pause test caught a real progress-refresh bug: initial protocol event
 
 The first isolated attempt used a musl-built library and failed with missing `libc.musl-x86_64.so.1`. The current official CPA image is Debian Bookworm, so release libraries now use glibc. This loader failure was not treated as a credential or model failure.
 
-The host requires a nonempty `GitHubRepository` metadata field even for local development. The plugin declares its planned source address; publication is a separate action and has not been performed.
+The host requires a nonempty `GitHubRepository` metadata field even for local development. The plugin declares `https://github.com/Renwang-Huang/cpa-model-quality`, which is also the source and release repository.
 
 The original installation used a separate in-memory management-key form because CPA Manager Plus did not pass authentication into resource iframes. Version 0.1.2 and the local Manager build `v1.12.10-groups.6` replace that extra login with a scoped parent-page API relay. The parent adds its existing login credential to requests for this plugin only; the relay never sends the credential into the iframe. Direct standalone access still requires a management key.
 
@@ -77,3 +77,23 @@ The public edge serves a separate plain/gzip panel copy under `/var/lib/cpa-ui/c
 After synchronization, Chromium verified the public entry with one Manager login: nine accounts (seven disabled), no plugin password form, two full-page reloads, navigation to the account page and back, account refresh, existing history/results and JSON export. The exported batch ID and item count matched the selected result's API response. Anonymous bootstrap returned 401 and there were no browser page errors. This check made zero new model-generation requests. The report and screenshot are `build/production-bridge-verification.json` and `build/production-bridge.png`.
 
 These checks establish plugin behavior against controlled responses. They do not measure a real model's intelligence or establish model identity. User-triggered benchmark runs produce their own raw evidence.
+
+## Version 0.1.3 release verification
+
+The setup reference card and its event handlers were removed together. Test
+selection, custom prompts, result references and history remain available.
+
+The native select fix sets an explicit `color-scheme` for standalone OS themes
+and for the Manager's active `data-theme`. Options use opaque backgrounds
+instead of inheriting the Manager's translucent field background. The browser
+check covers a dark Manager on a light OS and a light Manager on a dark OS,
+verifies option text/background colors, and changes the effort value without
+replacing the native keyboard-accessible control.
+
+Release validation uses Go 1.26.1 and Debian Bookworm. The tagged GitHub workflow
+requires race tests, vet and the actual CPA-host synthetic integration suite on
+both native Linux architectures before publishing any release asset. The local
+browser suite covers the removed setup elements, opposite host/OS themes and
+the existing end-to-end testing workflow. Current run reports remain in ignored
+`build/`; production account files, test history and deployment configuration
+are not part of the repository or release packages.

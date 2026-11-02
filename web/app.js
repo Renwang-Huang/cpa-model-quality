@@ -92,19 +92,6 @@ function renderCases() {
   $('cases').replaceChildren(...state.data.cases.map((c) => node('label', { class: 'case-choice' },
     node('input', { type: 'checkbox', checked: state.selectedCases.has(c.id), onchange: (e) => { e.target.checked ? state.selectedCases.add(c.id) : state.selectedCases.delete(c.id); updateEstimate(); } }),
     node('span', { class: 'case-copy' }, node('strong', {}, c.title), node('small', {}, c.category)), badge(isObjective(c) ? '自动评分' : '人工比较', isObjective(c) ? 'blue' : ''))));
-  const previous = $('inspect-case').value;
-  $('inspect-case').replaceChildren(...state.data.cases.map((c) => node('option', { value: c.id }, c.title)));
-  if (state.data.cases.some((c) => c.id === previous)) $('inspect-case').value = previous;
-  showReference();
-}
-function showReference() {
-  const c = state.data?.cases.find((c) => c.id === $('inspect-case').value); if (!c) return;
-  $('prompt-preview').textContent = c.prompt;
-  $('reference').textContent = c.reference;
-  $('expected').textContent = c.expected ? JSON.stringify(c.expected, null, 2) : '';
-  $('expected').hidden = !c.expected;
-  $('source').replaceChildren('来源：' + c.source + ' · ' + c.version + ' · ' + c.hash.slice(0, 12));
-  if (c.source_url) $('source').append(' ', node('a', { href: c.source_url, target: '_blank', rel: 'noreferrer' }, '原始来源 ↗'));
 }
 function renderModels() {
   const q = $('model-search').value.toLowerCase();
@@ -314,13 +301,11 @@ function renderHistory() {
 document.querySelectorAll('[data-tab]').forEach((n) => n.addEventListener('click', () => changeTab(n.dataset.tab)));
 $('refresh').onclick = () => task(bootstrap());
 $('login-form').onsubmit = (e) => { e.preventDefault(); state.key = $('key').value.trim(); $('key').value = ''; task(bootstrap()); };
-$('inspect-case').onchange = showReference;
 $('model-search').oninput = renderModels;
 $('account-search').oninput = renderAccounts;
 $('provider-filter').onchange = renderAccounts;
 $('select-cases').onclick = () => { const ids = state.data.cases.filter(isObjective).map((c) => c.id); const all = ids.every((id) => state.selectedCases.has(id)); ids.forEach((id) => all ? state.selectedCases.delete(id) : state.selectedCases.add(id)); renderCases(); updateEstimate(); };
 $('select-accounts').onclick = () => { const accounts = filteredAccounts().filter((a) => !a.disabled && a.models.length); const all = accounts.every((a) => state.selectedAccounts.has(a.id)); accounts.forEach((a) => all ? state.selectedAccounts.delete(a.id) : state.selectedAccounts.add(a.id)); renderAccounts(); updateEstimate(); };
-$('edit-custom').onclick = () => { const c = state.data.cases.find((c) => c.id === $('inspect-case').value); $('custom-prompt').value = c.prompt; $('use-custom').checked = true; $('custom-box').open = true; $('custom-prompt').focus(); updateEstimate(); };
 for (const id of ['effort', 'concurrency', 'repeats', 'use-custom', 'custom-prompt']) $(id).addEventListener('input', updateEstimate);
 $('start').onclick = () => task(start());
 $('go-setup').onclick = () => changeTab('setup');

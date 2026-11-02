@@ -14,6 +14,27 @@ with sync_playwright() as p:
  page.goto(env['base']+'/v0/resource/plugins/model-quality/page')
  page.locator('#key').fill(env['key']);page.locator('#login-form button').click();expect(page.locator('#accounts input')).to_have_count(3)
  expect(page.locator('#login')).to_be_hidden();expect(page.locator('#cases input')).to_have_count(12)
+ assert page.locator('#inspect-case').count()==0 and page.locator('.footnote').count()==0
+ check('setup reference panel and model-identity footnote are removed')
+ # The host may use a dark theme while the OS prefers light, or vice versa.
+ # Native popup colors must follow the host, including opaque option backgrounds.
+ for os_theme,host_theme in [('light','dark'),('dark','light')]:
+  page.emulate_media(color_scheme=os_theme)
+  page.evaluate("""(theme) => {
+    const root=document.documentElement;
+    root.dataset.cpampPluginHost='true';root.dataset.theme=theme;
+    const palette=theme==='dark'?{bg:'#171b28',surface:'#202636',field:'rgba(255,255,255,0.08)',ink:'#e5e5e5'}:{bg:'#f5f7fb',surface:'#fff',field:'rgba(0,0,0,0.04)',ink:'#20283b'};
+    for(const [name,value] of Object.entries({'--bg-secondary':palette.bg,'--bg-primary':palette.surface,'--bg-tertiary':palette.field,'--border-color':'#778295','--text-primary':palette.ink,'--text-secondary':'#778295','--primary-color':'#4878f5','--success-color':'#158c6c','--danger-color':'#d7505e'}))root.style.setProperty(name,value);
+  }""",host_theme)
+  native=page.locator('#effort').evaluate("""(select) => ({scheme:getComputedStyle(select).colorScheme,color:getComputedStyle(select.options[0]).color,background:getComputedStyle(select.options[0]).backgroundColor})""")
+  assert native['scheme']==host_theme,native
+  assert native['background']==('rgb(28, 37, 53)' if host_theme=='dark' else 'rgb(255, 255, 255)'),native
+  assert native['color']==('rgb(229, 229, 229)' if host_theme=='dark' else 'rgb(32, 40, 59)'),native
+  page.locator('#effort').select_option('medium');expect(page.locator('#effort')).to_have_value('medium')
+  page.screenshot(path=str(STAGE/f'host-{host_theme}-os-{os_theme}.png'),full_page=True)
+ page.evaluate("() => {const root=document.documentElement;delete root.dataset.cpampPluginHost;delete root.dataset.theme;root.removeAttribute('style')}")
+ page.emulate_media(color_scheme='light');page.locator('#effort').select_option('auto')
+ check('native select colors follow opposite host and OS themes without losing selection')
  assert not page.evaluate('document.documentElement.scrollWidth>innerWidth')
  page.screenshot(path=str(STAGE/'desktop-setup.png'),full_page=True)
  check('authenticated bootstrap and desktop layout')

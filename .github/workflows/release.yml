@@ -1,0 +1,83 @@
+name: Build and release
+
+on:
+  push:
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Linux ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check release version
+        run: |
+          if [[ "$GITHUB_REF_TYPE" == tag ]]; then
+            version="$(python3 -c 'import pathlib,re; print(re.search(r"const pluginVersion\s*=\s*\"([^\"]+)\"",pathlib.Path("plugin.go").read_text())[1])')"
+            [[ "$GITHUB_REF_NAME" == "v$version" ]]
+          fi
+      - name: Build native glibc library and package
+        run: bash scripts/build.sh
+      - name: Race tests and vet
+        run: |
+          docker run --rm -v "$PWD:/src" \
+            -e GOCACHE=/src/build/.gocache-glibc -e GOPATH=/src/build/.gopath \
+            cpa-model-quality-builder:go1.26.1-glibc \
+            sh -c 'go test -race ./... && go vet ./...'
+      - name: Actual CPA host integration with synthetic credentials
+        run: python3 scripts/integration.py
+      - name: Upload release archives
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-quality-linux-${{ matrix.arch }}
+          path: |
+            dist/model-quality_*_linux_${{ matrix.arch }}.zip
+            dist/build-manifest-${{ matrix.arch }}.json
+          if-no-files-found: error
+      - name: Upload synthetic verification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-linux-${{ matrix.arch }}
+          path: build/integration/verification.json
+          if-no-files-found: ignore
+
+  release:
+    name: Publish GitHub release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: model-quality-linux-*
+          path: release
+          merge-multiple: true
+      - name: Generate aggregate checksums
+        working-directory: release
+        run: sha256sum model-quality_*.zip > checksums.txt
+      - name: Publish verified release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "CPA 模型测智 $GITHUB_REF_NAME" \
+            --notes-file RELEASE_NOTES.md \
+            release/model-quality_*.zip release/build-manifest-*.json release/checksums.txt

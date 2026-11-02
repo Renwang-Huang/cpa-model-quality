@@ -17,5 +17,5 @@ files += [(f,str(f.relative_to(ROOT))) for f in sorted((ROOT/'licenses').iterdir
 with zipfile.ZipFile(target,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
  for f,n in files:
   info=zipfile.ZipInfo(n,(2026,10,29,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=(0o100755 if n.endswith('.so') else 0o100644)<<16;z.writestr(info,f.read_bytes())
-checks=[hashlib.sha256(f.read_bytes()).hexdigest()+'  '+f.name for f in sorted(out.glob('model-quality_*_linux_*.zip'))]
+checks=[hashlib.sha256(f.read_bytes()).hexdigest()+'  '+f.name for f in sorted(out.glob(f'model-quality_{version}_linux_*.zip'))]
 (out/'checksums.txt').write_text('\n'.join(checks)+'\n');print(target)
